@@ -22,6 +22,8 @@
 .ionide
 
 _pycache_/*
+build/
+dist/
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db

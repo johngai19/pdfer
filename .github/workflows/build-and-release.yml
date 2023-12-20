@@ -18,19 +18,26 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.11'
+          python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install pyinstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
 
       - name: Build the application
         run: pyinstaller --onefile --windowed main.py
 
       - name: Rename artifact
         run: |
-          echo "Renaming artifact..."
-          mv dist/main.exe dist/${{ runner.os }}-app.exe  # Windows
-          mv dist/main dist/${{ runner.os }}-app          # Linux
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            echo "Renaming artifact for Windows..."
+            mv dist/main.exe dist/windows-app.exe
+          else
+            echo "Renaming artifact for Linux..."
+            mv dist/main dist/linux-app
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -54,29 +61,29 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
 
       - name: Upload Release Asset (Windows)
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/windows-latest-app.exe
+          asset_path: ./dist/windows-app.exe
           asset_name: windows-app.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset (Linux)
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/ubuntu-latest-app
+          asset_path: ./dist/linux-app
           asset_name: linux-app
           asset_content_type: application/octet-stream
