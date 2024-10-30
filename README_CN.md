@@ -32,4 +32,3 @@ PDF水印移除工具是一个基于 PyQt5 的应用，用于从 PDF 文档中�
 ---
 
 作者：weizy0219
-公司网站：[www.wesinx.com](http://www.wesinx.com)
