@@ -32,4 +32,3 @@ This project is under the [GPL v3 license](LICENSE).
 ---
 
 Author: weizy0219
-Company Website: [www.wesinx.com](http://www.wesinx.com)
